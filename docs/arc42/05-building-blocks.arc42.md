@@ -718,6 +718,22 @@ protocol: TypeScript module exports
 ```
 
 <!-- app: begin core -->
+
+### Grid core
+
+Manages the task state for one round of five tasks: the hundred-grid (0–100), the current position, start and target of each task, how many tasks are done, and whether the round is finished.
+
+```arc42
+:::building-block
+id: bb-zahlengitter-core
+title: Grid core
+parent: bb-interactive-core
+technology: TypeScript
+requires: if-interactive-data
+path: src/core/index.ts
+:::
+```
+
 <!-- app: end core -->
 
 ## UI
@@ -753,6 +769,22 @@ protocol: Vue props and events
 ```
 
 <!-- app: begin ui -->
+
+### Grid component
+
+Renders the 11×11 hundred-grid with colour-coded cells (start: green, target: orange, current: blue), four arrow buttons (←→↑↓), per-task feedback, and a round-end screen; announces each position change for screen readers.
+
+```arc42
+:::building-block
+id: bb-zahlengitter-ui
+title: Grid component
+parent: bb-interactive-ui
+technology: Vue SFC
+requires: if-messages
+path: src/ui/App.vue
+:::
+```
+
 <!-- app: end ui -->
 
 ## Data
@@ -783,6 +815,9 @@ path: src/data
 ```
 
 <!-- app: begin data -->
+
+No data files: tasks are generated algorithmically from the seed and the task index in `src/core/index.ts`, so no JSON data file is needed.
+
 <!-- app: end data -->
 
 ## Messages
@@ -845,4 +880,43 @@ protocol: YAML, JSON Schema
 ```
 
 <!-- app: begin -->
+
+## App building blocks
+
+The app's own blocks inside the interactive core and UI, and their connections to the data and messages interfaces.
+
+```arc42
+:::diagram
+id: building-blocks-zahlengitter-core
+view: building-block
+notation: mermaid
+:::
+```
+
+```mermaid
+flowchart TB
+    subgraph bb-interactive-core["Core"]
+        bb-zahlengitter-core["Grid core (src/core)"]
+    end
+    bb-interactive-data["Data"]
+    bb-zahlengitter-core -->|"if-interactive-data"| bb-interactive-data
+```
+
+```arc42
+:::diagram
+id: building-blocks-zahlengitter-ui
+view: building-block
+notation: mermaid
+:::
+```
+
+```mermaid
+flowchart TB
+    subgraph bb-interactive-ui["UI"]
+        bb-zahlengitter-ui["Grid component (src/ui)"]
+    end
+    bb-interactive-messages["Messages"]
+    bb-zahlengitter-ui -->|"if-messages"| bb-interactive-messages
+```
+
 <!-- app: end -->

@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=../../node_modules/@lernapps/app-templates/runtime/interactive/playthrough.v1.schema.json
+# schwer: seed=3 — Start 19, 5 nach links und 1 nach oben → Ziel 4
+# Also test a wrong answer first, then correct
+seed: 3
+route: schwer
+steps:
+  - inputs: [{ kind: action, name: digit, value: "5" }]
+    state: { input: "5", phase: input }
+  - inputs: [{ kind: action, name: backspace }]
+    state: { input: "", phase: input }
+  - inputs: [{ kind: action, name: digit, value: "4" }]
+    state: { input: "4", phase: input }
+  - inputs: [{ kind: action, name: submit }]
+    state: { phase: correct }
+    announce: "Richtig! Die Zahl ist 4."

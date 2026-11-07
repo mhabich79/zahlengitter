@@ -3,3 +3,4 @@
 # and Vue single-file components: configuration rather than architecture.
 src/main.ts
 src/env.d.ts
+src/data/.gitkeep

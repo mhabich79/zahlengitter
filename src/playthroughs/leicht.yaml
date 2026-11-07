@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=../../node_modules/@lernapps/app-templates/runtime/interactive/playthrough.v1.schema.json
+# leicht: seed=1 — Start 80, 1 nach links → Ziel 79
+seed: 1
+route: leicht
+steps:
+  - inputs: [{ kind: action, name: digit, value: "7" }]
+    state: { input: "7", phase: input }
+  - inputs: [{ kind: action, name: digit, value: "9" }]
+    state: { input: "79", phase: input }
+  - inputs: [{ kind: action, name: submit }]
+    state: { phase: correct }
+    announce: "Richtig! Die Zahl ist 79."
