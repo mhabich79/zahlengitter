@@ -14,6 +14,8 @@ function emitAction(name: string, value?: string) {
   emit("input", { kind: "action", name, ...(value !== undefined ? { value } : {}) });
 }
 
+const isReverse = computed(() => props.state.route === "schwer");
+
 const directionText = computed(() => {
   const { stepsH, stepsV } = props.state.task;
   const parts: string[] = [];
@@ -43,8 +45,13 @@ const explanationText = computed(() => {
 watch(
   () => props.state.phase,
   (phase) => {
-    if (phase === "correct") announce(t("answeredCorrect", { target: props.state.task.target }));
-    if (phase === "wrong") announce(t("answeredWrong", { target: props.state.task.target }));
+    const { start, target } = props.state.task;
+    if (phase === "correct") {
+      announce(isReverse.value ? t("answeredCorrectReverse", { start }) : t("answeredCorrect", { target }));
+    }
+    if (phase === "wrong") {
+      announce(isReverse.value ? t("answeredWrongReverse", { start }) : t("answeredWrong", { target }));
+    }
     if (phase === "roundDone") announce(t("roundDone", { total: props.state.totalTasks }));
   },
 );
@@ -65,11 +72,20 @@ watch(
 
       <!-- Task card -->
       <div class="task-card" :aria-live="'polite'">
-        <p class="task-start">
-          {{ t("start") }}: <strong>{{ state.task.start }}</strong>
-        </p>
-        <p class="task-directions">{{ directionText }}</p>
-        <p class="task-question">{{ t("question") }}</p>
+        <template v-if="isReverse">
+          <p class="task-start">
+            {{ t("reverseAt") }}: <strong>{{ state.task.target }}</strong>
+          </p>
+          <p class="task-directions">{{ t("reverseDirections", { directions: directionText }) }}</p>
+          <p class="task-question">{{ t("questionReverse") }}</p>
+        </template>
+        <template v-else>
+          <p class="task-start">
+            {{ t("start") }}: <strong>{{ state.task.start }}</strong>
+          </p>
+          <p class="task-directions">{{ directionText }}</p>
+          <p class="task-question">{{ t("question") }}</p>
+        </template>
       </div>
 
       <!-- Input area (only during input phase) -->
@@ -116,7 +132,11 @@ watch(
 
       <!-- Feedback -->
       <div v-if="state.phase === 'correct'" class="feedback feedback--correct">
-        <p class="feedback__text">{{ t("correct", { target: state.task.target }) }}</p>
+        <p class="feedback__text">
+          {{
+            isReverse ? t("correctReverse", { start: state.task.start }) : t("correct", { target: state.task.target })
+          }}
+        </p>
         <p class="feedback__explanation">{{ explanationText }}</p>
         <button type="button" class="btn btn--primary" @click="emitAction('weiter')">
           {{ t("weiter") }}
@@ -124,7 +144,9 @@ watch(
       </div>
 
       <div v-if="state.phase === 'wrong'" class="feedback feedback--wrong">
-        <p class="feedback__text">{{ t("wrong", { target: state.task.target }) }}</p>
+        <p class="feedback__text">
+          {{ isReverse ? t("wrongReverse", { start: state.task.start }) : t("wrong", { target: state.task.target }) }}
+        </p>
         <p class="feedback__explanation">{{ explanationText }}</p>
         <button type="button" class="btn btn--primary" @click="emitAction('weiter')">
           {{ t("weiter") }}
@@ -144,7 +166,10 @@ watch(
               <td
                 v-for="c in 10"
                 :key="c"
-                :class="['cell', (r - 1) * 10 + c === state.task.start ? 'cell--start' : '']"
+                :class="[
+                  'cell',
+                  (r - 1) * 10 + c === (isReverse ? state.task.target : state.task.start) ? 'cell--start' : '',
+                ]"
                 :aria-label="t('cell', { n: (r - 1) * 10 + c })"
               >
                 {{ (r - 1) * 10 + c }}
@@ -416,6 +441,132 @@ watch(
   .numpad__key {
     height: 3rem;
     font-size: 1.2rem;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .game {
+    color: #e0e0e0;
+  }
+
+  .task-counter {
+    color: #aaa;
+  }
+
+  .task-card {
+    background: #1a2e1b;
+    border-color: #4caf50;
+  }
+
+  .task-start strong {
+    color: #81c784;
+  }
+
+  .task-directions {
+    color: #90caf9;
+  }
+
+  .task-question {
+    color: #e0e0e0;
+  }
+
+  .input-label {
+    color: #bbb;
+  }
+
+  .number-input {
+    background: #1a1a2e;
+    border-color: #42a5f5;
+    color: #90caf9;
+  }
+
+  .numpad__key {
+    background: #1e3a5f;
+    border-color: #42a5f5;
+    color: #90caf9;
+  }
+
+  .numpad__key:active {
+    background: #174280;
+  }
+
+  .numpad__key--del {
+    background: #3e2a00;
+    border-color: #ffb74d;
+    color: #ffcc80;
+  }
+
+  .numpad__key--ok {
+    background: #1b3a1c;
+    border-color: #66bb6a;
+    color: #a5d6a7;
+  }
+
+  .btn--submit {
+    background: #1565c0;
+    color: #fff;
+  }
+
+  .btn--primary {
+    background: #2e7d32;
+    color: #fff;
+  }
+
+  .btn--primary:hover {
+    background: #388e3c;
+  }
+
+  .btn--help {
+    background: #2a2a2a;
+    color: #ccc;
+    border-color: #555;
+  }
+
+  .btn--help:hover {
+    background: #333;
+  }
+
+  .feedback--correct {
+    background: #1a2e1b;
+    border-color: #4caf50;
+  }
+
+  .feedback--correct .feedback__text {
+    color: #a5d6a7;
+  }
+
+  .feedback--wrong {
+    background: #2d2000;
+    border-color: #f9a825;
+  }
+
+  .feedback--wrong .feedback__text {
+    color: #ffcc80;
+  }
+
+  .feedback--round {
+    background: #1a2e1b;
+    border-color: #4caf50;
+  }
+
+  .feedback--round .feedback__text {
+    color: #a5d6a7;
+  }
+
+  .feedback__explanation {
+    color: #bbb;
+  }
+
+  .cell {
+    background: #2a2a2a;
+    border-color: #444;
+    color: #ddd;
+  }
+
+  .cell--start {
+    background: #1b3a1c;
+    border-color: #4caf50;
+    color: #a5d6a7;
   }
 }
 </style>
