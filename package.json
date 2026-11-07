@@ -1,0 +1,22 @@
+{
+  "name": "zahlengitter",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vp dev",
+    "build": "vp build",
+    "check": "lernapps check",
+    "prepare": "lernapps hooks"
+  },
+  "devDependencies": {
+    "@doctc/arc42": "0.38.0",
+    "@lernapps/app-templates": "^0.3.2",
+    "@lernapps/tooling": "^0.6.3",
+    "typescript": "6.0.3",
+    "vite-plus": "1.4.0",
+    "vue-tsc": "3.3.11"
+  },
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0"
+  }
+}
