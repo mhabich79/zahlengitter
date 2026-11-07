@@ -1,6 +1,22 @@
 {
-  "app": "Zähler",
-  "count": "{count} von {goal}",
-  "next": "Weiter",
-  "done": "Fertig: bis drei gezählt."
+  "app": "Zahlengitter",
+  "start": "Starte bei",
+  "target": "Zielzahl",
+  "position": "Du bist bei",
+  "solved": "Richtig! Du hast {target} gefunden!",
+  "weiter": "Weiter",
+  "taskCounter": "Aufgabe {done} von {total}",
+  "roundDone": "Super! Du hast alle {total} Aufgaben gelöst!",
+  "neustart": "Nochmal spielen",
+  "arrowRight": "Schritt nach rechts",
+  "arrowLeft": "Schritt nach links",
+  "arrowDown": "Schritt nach unten",
+  "arrowUp": "Schritt nach oben",
+  "gridLabel": "Hunderterfeld",
+  "cell": "Feld {n}",
+  "routeLeicht": "Leicht",
+  "routeMittel": "Mittel",
+  "routeSchwer": "Schwer",
+  "movedTo": "Du bist jetzt bei {position}.",
+  "reachedTarget": "Du hast die Zielzahl {target} erreicht!"
 }

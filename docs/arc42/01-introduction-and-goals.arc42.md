@@ -82,3 +82,11 @@ quality catalog with priorities and measurable scenarios.
 | Teachers and parents | lernapps.net | To see from the pages and the entry what the app teaches and what it does not offer, and that it may be used |
 | Reviewers (the review agent before listing, the owner who decides the listing) | `lernapps/apps` | An architecture that says what each part does and why, readable without the code |
 | Maintainers of an archetype | `lernapps/app-templates` | One generic architecture and one extension per archetype, so a change to the frame is made once |
+
+<!-- app: begin intro -->
+
+## 1.4 This App: Zahlengitter
+
+Second-grade learners practise moving around a hundred-grid (0–100): starting from a given number, they step left/right (±1) and up/down (±10) to reach a target number. Three difficulty routes — leicht (one direction), mittel (combined), schwer (reverse path) — each with five random tasks per round, generated deterministically from the seed.
+
+<!-- app: end intro -->

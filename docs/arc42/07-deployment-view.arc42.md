@@ -194,4 +194,33 @@ hosts: bb-shell, bb-interactive-core, bb-interactive-ui, bb-interactive-data, bb
 ```
 
 <!-- app: begin -->
+
+## Zahlengitter build
+
+The grid core and grid component run at build time and during end-to-end tests wherever `bb-interactive-core` and `bb-interactive-ui` run.
+
+```arc42
+:::deployment-node
+id: dn-zahlengitter-build
+title: Zahlengitter build
+type: container
+parent: dn-interactive-build
+hosts: bb-zahlengitter-core, bb-zahlengitter-ui
+:::
+```
+
+## Zahlengitter app page
+
+The grid core and grid component run in the learner's browser on the interactive app page.
+
+```arc42
+:::deployment-node
+id: dn-zahlengitter-browser
+title: Zahlengitter app page
+type: container
+parent: dn-interactive-app-page
+hosts: bb-zahlengitter-core, bb-zahlengitter-ui
+:::
+```
+
 <!-- app: end -->

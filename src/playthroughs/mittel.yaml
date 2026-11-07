@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=../../node_modules/@lernapps/app-templates/runtime/interactive/playthrough.v1.schema.json
+# mittel: seed=2, start=75, target=54 — 1 rechts, 2 oben
+seed: 2
+route: mittel
+steps:
+  - inputs: [{ kind: action, name: rechts }]
+    state: { position: 76, solved: false }
+    announce: "Du bist jetzt bei 76."
+  - inputs: [{ kind: action, name: oben }]
+    state: { position: 65, solved: false }
+    announce: "Du bist jetzt bei 65."
+  - inputs: [{ kind: action, name: oben }]
+    state: { position: 54, solved: true }
+    announce: "Du hast die Zielzahl 54 erreicht!"

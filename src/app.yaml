@@ -1,8 +1,23 @@
 # yaml-language-server: $schema=../node_modules/@lernapps/app-templates/runtime/interactive/interactive.v1.schema.json
-title: Platzhalter
-description: Ein Knopf, der bis drei zählt. Er hält den Platz frei, bis die geplante App da ist.
+title: Zahlengitter
+description: Bewege dich im Hunderterfeld von einer Zahl zur anderen – links, rechts, oben und unten.
 howto: |
-  - Drücke „Weiter“, bis du bei drei bist.
+  - Tippe auf die Pfeile oder drücke die Pfeiltasten, um dich im Zahlengitter zu bewegen.
+  - Starte bei der grün markierten Zahl und finde den Weg zur gelb markierten Zielzahl.
+  - Leicht: nur eine Richtung. Mittel: kombinierte Wege. Schwer: finde den Rückweg.
 competencies:
-  - Ich kann bis drei zählen.
+  - Ich kann mich im Hunderterfeld nach links und rechts bewegen.
+  - Ich kann mich im Hunderterfeld nach oben und unten bewegen.
+  - Ich kann kombinierte Wege im Hunderterfeld finden.
+  - Ich kann Umkehraufgaben im Hunderterfeld lösen.
 languages: [de]
+routes:
+  - id: leicht
+    title: Leicht
+    description: Nur eine Richtung – links/rechts oder oben/unten.
+  - id: mittel
+    title: Mittel
+    description: Kombinierte Wege – beide Richtungen zusammen.
+  - id: schwer
+    title: Schwer
+    description: Finde den Rückweg – Umkehraufgaben.
