@@ -7,15 +7,10 @@
   "stepsDown": "{n} nach unten",
   "stepsUp": "{n} nach oben",
   "question": "Welche Zahl erreichst du?",
-  "questionReverse": "Wo hast du angefangen?",
-  "reverseAt": "Du bist bei",
-  "reverseDirections": "Du bist {directions} gegangen.",
   "inputLabel": "Deine Antwort",
   "submit": "Prüfen",
   "correct": "Richtig! Die Zahl ist {target}.",
-  "correctReverse": "Richtig! Die Startzahl ist {start}.",
   "wrong": "Nicht ganz. Die richtige Zahl wäre {target} gewesen.",
-  "wrongReverse": "Nicht ganz. Die richtige Startzahl wäre {start} gewesen.",
   "explanation": "Von {start}: {stepsH} ergibt {afterH}, dann {stepsV} ergibt {target}.",
   "explanationHonly": "Von {start}: {stepsH} ergibt {target}.",
   "explanationVonly": "Von {start}: {stepsV} ergibt {target}.",
@@ -28,7 +23,5 @@
   "cell": "Feld {n}",
   "movedTo": "Du bist bei {n}.",
   "answeredCorrect": "Richtig! Die Zahl ist {target}.",
-  "answeredCorrectReverse": "Richtig! Die Startzahl ist {start}.",
-  "answeredWrong": "Nicht ganz. Richtig wäre {target}.",
-  "answeredWrongReverse": "Nicht ganz. Richtig wäre {start}."
+  "answeredWrong": "Nicht ganz. Richtig wäre {target}."
 }

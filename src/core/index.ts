@@ -211,8 +211,7 @@ export function step(state: State, input: Input): State {
     if (input.name === "submit") {
       const entered = parseInt(state.input, 10);
       if (isNaN(entered)) return state;
-      const answer = state.route === "schwer" ? state.task.start : state.task.target;
-      const phase: Phase = entered === answer ? "correct" : "wrong";
+      const phase: Phase = entered === state.task.target ? "correct" : "wrong";
       return { ...state, phase };
     }
   }
@@ -227,8 +226,7 @@ export function step(state: State, input: Input): State {
     if (input.key === "Enter" && state.input.length > 0) {
       const entered = parseInt(state.input, 10);
       if (isNaN(entered)) return state;
-      const answer = state.route === "schwer" ? state.task.start : state.task.target;
-      const phase: Phase = entered === answer ? "correct" : "wrong";
+      const phase: Phase = entered === state.task.target ? "correct" : "wrong";
       return { ...state, phase };
     }
   }

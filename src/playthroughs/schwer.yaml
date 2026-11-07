@@ -1,6 +1,5 @@
 # yaml-language-server: $schema=../../node_modules/@lernapps/app-templates/runtime/interactive/playthrough.v1.schema.json
-# schwer: seed=3 — target=4, stepsH=-5, stepsV=-1 → Startzahl ist 19
-# Reverse task: Du bist bei 4. Du bist 5 nach links und 1 nach oben gegangen. Wo hast du angefangen? → 19
+# schwer: seed=3 — Start 19, 5 nach links und 1 nach oben → Ziel 4
 # Also test a wrong answer first, then correct
 seed: 3
 route: schwer
@@ -9,10 +8,8 @@ steps:
     state: { input: "5", phase: input }
   - inputs: [{ kind: action, name: backspace }]
     state: { input: "", phase: input }
-  - inputs: [{ kind: action, name: digit, value: "1" }]
-    state: { input: "1", phase: input }
-  - inputs: [{ kind: action, name: digit, value: "9" }]
-    state: { input: "19", phase: input }
+  - inputs: [{ kind: action, name: digit, value: "4" }]
+    state: { input: "4", phase: input }
   - inputs: [{ kind: action, name: submit }]
     state: { phase: correct }
-    announce: "Richtig! Die Startzahl ist 19."
+    announce: "Richtig! Die Zahl ist 4."
