@@ -1,10 +1,10 @@
 # yaml-language-server: $schema=../node_modules/@lernapps/app-templates/runtime/interactive/interactive.v1.schema.json
 title: Zahlengitter
-description: Bewege dich im Hunderterfeld von einer Zahl zur anderen – links, rechts, oben und unten.
+description: Rechne im Kopf durch das Hunderterfeld – von der Startzahl Schritt für Schritt zur Zielzahl.
 howto: |
-  - Tippe auf die Pfeile oder drücke die Pfeiltasten, um dich im Hunderterfeld zu bewegen.
-  - Starte bei der grün markierten Zahl und finde den Weg zur orange markierten Zielzahl.
-  - Leicht: nur eine Richtung. Mittel: kombinierte Wege. Schwer: finde den Rückweg.
+  - Lies die Aufgabe: Starte bei einer Zahl und gehe so viele Schritte nach links, rechts, oben oder unten.
+  - Rechne den Weg im Kopf durch und tippe die Zielzahl über das Zahlenpad ein.
+  - Brauchst du Hilfe? Blende das Hunderterfeld ein – dort siehst du deine Startzahl.
 competencies:
   - Ich kann mich im Hunderterfeld nach links und rechts bewegen.
   - Ich kann mich im Hunderterfeld nach oben und unten bewegen.
