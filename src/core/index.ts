@@ -17,11 +17,11 @@ export interface State {
   totalTasks: number;
   solved: boolean;
   roundDone: boolean;
-  wrongStep: boolean;
 }
 
 const TOTAL_TASKS = 5;
-const MIN = 0;
+const COLS = 10;
+const MIN = 1;
 const MAX = 100;
 
 function lcg(seed: number): number {
@@ -34,6 +34,14 @@ function randomInt(seed: number, min: number, max: number): [number, number] {
   return [value, next];
 }
 
+function col(n: number): number {
+  return ((n - 1) % COLS) + 1;
+}
+
+function row(n: number): number {
+  return Math.ceil(n / COLS);
+}
+
 function generateTask(seed: number, taskIndex: number, route: Route): Task {
   let s = lcg(seed + taskIndex * 997);
 
@@ -41,86 +49,82 @@ function generateTask(seed: number, taskIndex: number, route: Route): Task {
   let target: number;
 
   if (route === "leicht") {
-    // Only one direction: either horizontal (±1..±9) or vertical (±10, ±20, ±30)
     const [dirType, s1] = randomInt(s, 0, 1);
     s = s1;
     if (dirType === 0) {
-      // horizontal only
-      const [col, s2] = randomInt(s, 1, 9);
+      // horizontal only: ±1 bis ±5
+      const [startVal, s2] = randomInt(s, MIN, MAX);
       s = s2;
+      start = startVal;
       const [steps, s3] = randomInt(s, 1, 5);
       s = s3;
       const [goRight, s4] = randomInt(s, 0, 1);
       s = s4;
-      const row = Math.floor(col / 11) * 11;
-      start = Math.floor(Math.abs(s) % 9) + row + 1;
-      if (start > MAX) start = 1;
-      const maxRight = 10 - (start % 11);
-      const maxLeft = start % 11;
-      if (goRight === 1 && maxRight >= 1) {
-        const actualSteps = Math.min(steps, maxRight);
-        target = start + actualSteps;
-      } else if (maxLeft >= 1) {
-        const actualSteps = Math.min(steps, maxLeft);
-        target = start - actualSteps;
+      const c = col(start);
+      if (goRight === 1 && c + steps <= COLS) {
+        target = start + steps;
+      } else if (c - steps >= 1) {
+        target = start - steps;
+      } else if (c + Math.min(steps, COLS - c) <= COLS) {
+        target = start + Math.min(steps, COLS - c);
       } else {
-        target = start + 1;
+        target = start - 1;
       }
     } else {
-      // vertical only: steps of ±11 (one row = 11 cells)
-      const [startVal, s2] = randomInt(s, 11, 89);
+      // vertical only: ±10, ±20, ±30
+      const [startVal, s2] = randomInt(s, 11, 90);
       s = s2;
       start = startVal;
       const [steps, s3] = randomInt(s, 1, 3);
       s = s3;
       const [goDown, s4] = randomInt(s, 0, 1);
       s = s4;
-      if (goDown === 1 && start + steps * 11 <= MAX) {
-        target = start + steps * 11;
-      } else if (start - steps * 11 >= MIN) {
-        target = start - steps * 11;
+      if (goDown === 1 && start + steps * COLS <= MAX) {
+        target = start + steps * COLS;
+      } else if (start - steps * COLS >= MIN) {
+        target = start - steps * COLS;
       } else {
-        target = start + 11;
-        if (target > MAX) target = start - 11;
+        target = start + COLS <= MAX ? start + COLS : start - COLS;
       }
     }
   } else if (route === "mittel") {
-    // Combined: both directions
-    const [startVal, s1] = randomInt(s, 11, 88);
+    const [startVal, s1] = randomInt(s, 12, 89);
     s = s1;
     start = startVal;
     const [dh, s2] = randomInt(s, -4, 4);
     s = s2;
     const [dv, s3] = randomInt(s, -3, 3);
     s = s3;
-    const col = start % 11;
-    const row = Math.floor(start / 11);
-    const newCol = Math.max(0, Math.min(10, col + dh));
-    const newRow = Math.max(0, Math.min(10, row + dv));
-    target = newRow * 11 + newCol;
-    if (target === start) {
+    const c = col(start);
+    const r = row(start);
+    const newCol = Math.max(1, Math.min(COLS, c + dh));
+    const newRow = Math.max(1, Math.min(MAX / COLS, r + dv));
+    target = (newRow - 1) * COLS + newCol;
+    if (target === start || target < MIN || target > MAX) {
       target = start + 1 <= MAX ? start + 1 : start - 1;
     }
   } else {
-    // schwer: Umkehraufgaben — same as mittel, but learner navigates backwards
-    const [startVal, s1] = randomInt(s, 11, 88);
+    // schwer: Umkehraufgaben
+    const [startVal, s1] = randomInt(s, 12, 89);
     s = s1;
     const intermediate = startVal;
     const [dh, s2] = randomInt(s, -3, 3);
     s = s2;
     const [dv, s3] = randomInt(s, -2, 2);
     s = s3;
-    const col = intermediate % 11;
-    const row = Math.floor(intermediate / 11);
-    const newCol = Math.max(0, Math.min(10, col + dh));
-    const newRow = Math.max(0, Math.min(10, row + dv));
-    const endVal = newRow * 11 + newCol;
-    // In schwer: start is the "end" of a path, target is where you came from
-    start = endVal !== intermediate ? endVal : endVal + 11 <= MAX ? endVal + 11 : endVal - 11;
+    const c = col(intermediate);
+    const r = row(intermediate);
+    const newCol = Math.max(1, Math.min(COLS, c + dh));
+    const newRow = Math.max(1, Math.min(MAX / COLS, r + dv));
+    const endVal = (newRow - 1) * COLS + newCol;
+    start = endVal !== intermediate ? endVal : endVal + COLS <= MAX ? endVal + COLS : endVal - COLS;
     target = intermediate;
+    if (start < MIN || start > MAX || target < MIN || target > MAX) {
+      start = 56;
+      target = 34;
+    }
   }
 
-  // Clamp to valid range
   if (start < MIN) start = MIN;
   if (start > MAX) start = MAX;
   if (target < MIN) target = MIN;
@@ -149,17 +153,16 @@ export function start(seed: number, route?: string): State {
     totalTasks: TOTAL_TASKS,
     solved: false,
     roundDone: false,
-    wrongStep: false,
   };
 }
 
 function movePosition(position: number, action: string): number {
-  const col = position % 11;
-  const row = Math.floor(position / 11);
-  if (action === "rechts" && col < 10) return position + 1;
-  if (action === "links" && col > 0) return position - 1;
-  if (action === "unten" && row < 10) return position + 11;
-  if (action === "oben" && row > 0) return position - 11;
+  const c = col(position);
+  const r = row(position);
+  if (action === "rechts" && c < COLS) return position + 1;
+  if (action === "links" && c > 1) return position - 1;
+  if (action === "unten" && r < MAX / COLS) return position + COLS;
+  if (action === "oben" && r > 1) return position - COLS;
   return position;
 }
 
@@ -175,7 +178,6 @@ export function step(state: State, input: Input): State {
         tasksDone: 0,
         solved: false,
         roundDone: false,
-        wrongStep: false,
       };
     }
     return state;
@@ -196,7 +198,6 @@ export function step(state: State, input: Input): State {
         position: newTask.start,
         tasksDone,
         solved: false,
-        wrongStep: false,
       };
     }
     return state;
@@ -206,9 +207,9 @@ export function step(state: State, input: Input): State {
 
   if (input.kind === "action" && moveActions.includes(input.name)) {
     const newPos = movePosition(state.position, input.name);
-    if (newPos === state.position) return { ...state, wrongStep: false };
+    if (newPos === state.position) return state;
     const solved = newPos === state.task.target;
-    return { ...state, position: newPos, solved, wrongStep: false };
+    return { ...state, position: newPos, solved };
   }
 
   if (input.kind === "key") {
@@ -221,9 +222,9 @@ export function step(state: State, input: Input): State {
     const action = keyMap[input.key];
     if (action !== undefined) {
       const newPos = movePosition(state.position, action);
-      if (newPos === state.position) return { ...state, wrongStep: false };
+      if (newPos === state.position) return state;
       const solved = newPos === state.task.target;
-      return { ...state, position: newPos, solved, wrongStep: false };
+      return { ...state, position: newPos, solved };
     }
   }
 

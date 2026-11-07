@@ -2,8 +2,8 @@
 title: Zahlengitter
 description: Bewege dich im Hunderterfeld von einer Zahl zur anderen – links, rechts, oben und unten.
 howto: |
-  - Tippe auf die Pfeile oder drücke die Pfeiltasten, um dich im Zahlengitter zu bewegen.
-  - Starte bei der grün markierten Zahl und finde den Weg zur gelb markierten Zielzahl.
+  - Tippe auf die Pfeile oder drücke die Pfeiltasten, um dich im Hunderterfeld zu bewegen.
+  - Starte bei der grün markierten Zahl und finde den Weg zur orange markierten Zielzahl.
   - Leicht: nur eine Richtung. Mittel: kombinierte Wege. Schwer: finde den Rückweg.
 competencies:
   - Ich kann mich im Hunderterfeld nach links und rechts bewegen.

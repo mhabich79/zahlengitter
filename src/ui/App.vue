@@ -66,15 +66,15 @@ watch(
 
       <table class="grid" :aria-label="t('gridLabel')">
         <tbody>
-          <tr v-for="row in 11" :key="row">
+          <tr v-for="r in 10" :key="r">
             <td
-              v-for="col in 11"
-              :key="col"
-              :class="cellClass((row - 1) * 11 + (col - 1))"
-              :aria-label="t('cell', { n: (row - 1) * 11 + (col - 1) })"
-              :aria-current="(row - 1) * 11 + (col - 1) === state.position ? 'true' : undefined"
+              v-for="c in 10"
+              :key="c"
+              :class="cellClass((r - 1) * 10 + c)"
+              :aria-label="t('cell', { n: (r - 1) * 10 + c })"
+              :aria-current="(r - 1) * 10 + c === state.position ? 'true' : undefined"
             >
-              {{ (row - 1) * 11 + (col - 1) }}
+              {{ (r - 1) * 10 + c }}
             </td>
           </tr>
         </tbody>
@@ -150,16 +150,16 @@ watch(
   border-collapse: separate;
   border-spacing: 2px;
   width: 100%;
-  max-width: 440px;
+  max-width: 400px;
   table-layout: fixed;
 }
 
 .cell {
-  width: calc(100% / 11);
+  width: 10%;
   aspect-ratio: 1;
   text-align: center;
   vertical-align: middle;
-  font-size: clamp(0.55rem, 2vw, 0.9rem);
+  font-size: clamp(0.6rem, 2.2vw, 1rem);
   font-weight: 500;
   border-radius: 4px;
   background: #f5f5f5;
