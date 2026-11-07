@@ -4,19 +4,23 @@ export type Route = "leicht" | "mittel" | "schwer";
 
 export interface Task {
   start: number;
+  stepsH: number; // horizontal steps: positive = right, negative = left
+  stepsV: number; // vertical steps: positive = down, negative = up
   target: number;
 }
+
+export type Phase = "input" | "correct" | "wrong" | "roundDone";
 
 export interface State {
   seed: number;
   route: Route;
   task: Task;
   taskIndex: number;
-  position: number;
   tasksDone: number;
   totalTasks: number;
-  solved: boolean;
-  roundDone: boolean;
+  phase: Phase;
+  input: string;
+  gridVisible: boolean;
 }
 
 const TOTAL_TASKS = 5;
@@ -34,25 +38,27 @@ function randomInt(seed: number, min: number, max: number): [number, number] {
   return [value, next];
 }
 
-function col(n: number): number {
+function colOf(n: number): number {
   return ((n - 1) % COLS) + 1;
 }
 
-function row(n: number): number {
+function rowOf(n: number): number {
   return Math.ceil(n / COLS);
 }
 
 function generateTask(seed: number, taskIndex: number, route: Route): Task {
-  let s = lcg(seed + taskIndex * 997);
+  let s = lcg(seed + taskIndex * 997 + 1);
 
   let start: number;
-  let target: number;
+  let stepsH: number;
+  let stepsV: number;
 
   if (route === "leicht") {
+    // Only one direction
     const [dirType, s1] = randomInt(s, 0, 1);
     s = s1;
     if (dirType === 0) {
-      // horizontal only: ±1 bis ±5
+      // horizontal only
       const [startVal, s2] = randomInt(s, MIN, MAX);
       s = s2;
       start = startVal;
@@ -60,18 +66,17 @@ function generateTask(seed: number, taskIndex: number, route: Route): Task {
       s = s3;
       const [goRight, s4] = randomInt(s, 0, 1);
       s = s4;
-      const c = col(start);
+      const c = colOf(start);
       if (goRight === 1 && c + steps <= COLS) {
-        target = start + steps;
+        stepsH = steps;
       } else if (c - steps >= 1) {
-        target = start - steps;
-      } else if (c + Math.min(steps, COLS - c) <= COLS) {
-        target = start + Math.min(steps, COLS - c);
+        stepsH = -steps;
       } else {
-        target = start - 1;
+        stepsH = COLS - c > 0 ? COLS - c : -(c - 1);
       }
+      stepsV = 0;
     } else {
-      // vertical only: ±10, ±20, ±30
+      // vertical only
       const [startVal, s2] = randomInt(s, 11, 90);
       s = s2;
       start = startVal;
@@ -79,61 +84,58 @@ function generateTask(seed: number, taskIndex: number, route: Route): Task {
       s = s3;
       const [goDown, s4] = randomInt(s, 0, 1);
       s = s4;
-      if (goDown === 1 && start + steps * COLS <= MAX) {
-        target = start + steps * COLS;
-      } else if (start - steps * COLS >= MIN) {
-        target = start - steps * COLS;
+      const r = rowOf(start);
+      if (goDown === 1 && r + steps <= MAX / COLS) {
+        stepsV = steps;
+      } else if (r - steps >= 1) {
+        stepsV = -steps;
       } else {
-        target = start + COLS <= MAX ? start + COLS : start - COLS;
+        stepsV = MAX / COLS - r > 0 ? 1 : -1;
       }
+      stepsH = 0;
     }
   } else if (route === "mittel") {
+    // Both directions, no wrap
     const [startVal, s1] = randomInt(s, 12, 89);
     s = s1;
     start = startVal;
-    const [dh, s2] = randomInt(s, -4, 4);
+    const [absH, s2] = randomInt(s, 1, 4);
     s = s2;
-    const [dv, s3] = randomInt(s, -3, 3);
+    const [dirH, s3] = randomInt(s, 0, 1);
     s = s3;
-    const c = col(start);
-    const r = row(start);
-    const newCol = Math.max(1, Math.min(COLS, c + dh));
-    const newRow = Math.max(1, Math.min(MAX / COLS, r + dv));
-    target = (newRow - 1) * COLS + newCol;
-    if (target === start || target < MIN || target > MAX) {
-      target = start + 1 <= MAX ? start + 1 : start - 1;
-    }
+    const [absV, s4] = randomInt(s, 1, 3);
+    s = s4;
+    const [dirV, s5] = randomInt(s, 0, 1);
+    s = s5;
+    const c = colOf(start);
+    const r = rowOf(start);
+    stepsH = dirH === 1 ? Math.min(absH, COLS - c) : -Math.min(absH, c - 1);
+    stepsV = dirV === 1 ? Math.min(absV, MAX / COLS - r) : -Math.min(absV, r - 1);
+    if (stepsH === 0) stepsH = c < COLS ? 1 : -1;
+    if (stepsV === 0) stepsV = r < MAX / COLS ? 1 : -1;
   } else {
-    // schwer: Umkehraufgaben
-    const [startVal, s1] = randomInt(s, 12, 89);
+    // schwer: larger steps, both directions
+    const [startVal, s1] = randomInt(s, 13, 88);
     s = s1;
-    const intermediate = startVal;
-    const [dh, s2] = randomInt(s, -3, 3);
+    start = startVal;
+    const [absH, s2] = randomInt(s, 1, 5);
     s = s2;
-    const [dv, s3] = randomInt(s, -2, 2);
+    const [dirH, s3] = randomInt(s, 0, 1);
     s = s3;
-    const c = col(intermediate);
-    const r = row(intermediate);
-    const newCol = Math.max(1, Math.min(COLS, c + dh));
-    const newRow = Math.max(1, Math.min(MAX / COLS, r + dv));
-    const endVal = (newRow - 1) * COLS + newCol;
-    start = endVal !== intermediate ? endVal : endVal + COLS <= MAX ? endVal + COLS : endVal - COLS;
-    target = intermediate;
-    if (start < MIN || start > MAX || target < MIN || target > MAX) {
-      start = 56;
-      target = 34;
-    }
+    const [absV, s4] = randomInt(s, 1, 4);
+    s = s4;
+    const [dirV, s5] = randomInt(s, 0, 1);
+    s = s5;
+    const c = colOf(start);
+    const r = rowOf(start);
+    stepsH = dirH === 1 ? Math.min(absH, COLS - c) : -Math.min(absH, c - 1);
+    stepsV = dirV === 1 ? Math.min(absV, MAX / COLS - r) : -Math.min(absV, r - 1);
+    if (stepsH === 0) stepsH = c < COLS ? 1 : -1;
+    if (stepsV === 0) stepsV = r < MAX / COLS ? 1 : -1;
   }
 
-  if (start < MIN) start = MIN;
-  if (start > MAX) start = MAX;
-  if (target < MIN) target = MIN;
-  if (target > MAX) target = MAX;
-  if (target === start) {
-    target = start + 1 <= MAX ? start + 1 : start - 1;
-  }
-
-  return { start, target };
+  const target = start + stepsH + stepsV * COLS;
+  return { start, stepsH, stepsV, target };
 }
 
 function isValidRoute(route: string): route is Route {
@@ -148,83 +150,84 @@ export function start(seed: number, route?: string): State {
     route: r,
     task,
     taskIndex: 0,
-    position: task.start,
     tasksDone: 0,
     totalTasks: TOTAL_TASKS,
-    solved: false,
-    roundDone: false,
+    phase: "input",
+    input: "",
+    gridVisible: false,
   };
 }
 
-function movePosition(position: number, action: string): number {
-  const c = col(position);
-  const r = row(position);
-  if (action === "rechts" && c < COLS) return position + 1;
-  if (action === "links" && c > 1) return position - 1;
-  if (action === "unten" && r < MAX / COLS) return position + COLS;
-  if (action === "oben" && r > 1) return position - COLS;
-  return position;
-}
-
 export function step(state: State, input: Input): State {
-  if (state.roundDone) {
+  if (state.phase === "roundDone") {
     if (input.kind === "action" && input.name === "neustart") {
       const newTask = generateTask(state.seed, 0, state.route);
       return {
         ...state,
         task: newTask,
         taskIndex: 0,
-        position: newTask.start,
         tasksDone: 0,
-        solved: false,
-        roundDone: false,
+        phase: "input",
+        input: "",
+        gridVisible: false,
       };
     }
     return state;
   }
 
-  if (state.solved) {
+  if (state.phase === "correct" || state.phase === "wrong") {
     if (input.kind === "action" && input.name === "weiter") {
       const nextIndex = state.taskIndex + 1;
       const tasksDone = state.tasksDone + 1;
       if (tasksDone >= state.totalTasks) {
-        return { ...state, tasksDone, roundDone: true, solved: false };
+        return { ...state, tasksDone, phase: "roundDone", gridVisible: false };
       }
       const newTask = generateTask(state.seed, nextIndex, state.route);
       return {
         ...state,
         task: newTask,
         taskIndex: nextIndex,
-        position: newTask.start,
         tasksDone,
-        solved: false,
+        phase: "input",
+        input: "",
+        gridVisible: false,
       };
     }
     return state;
   }
 
-  const moveActions = ["rechts", "links", "unten", "oben"];
-
-  if (input.kind === "action" && moveActions.includes(input.name)) {
-    const newPos = movePosition(state.position, input.name);
-    if (newPos === state.position) return state;
-    const solved = newPos === state.task.target;
-    return { ...state, position: newPos, solved };
+  // phase === "input"
+  if (input.kind === "action") {
+    if (input.name === "toggleGrid") {
+      return { ...state, gridVisible: !state.gridVisible };
+    }
+    if (input.name === "digit" && input.value !== undefined) {
+      if (state.input.length >= 3) return state;
+      return { ...state, input: state.input + String(input.value) };
+    }
+    if (input.name === "backspace") {
+      return { ...state, input: state.input.slice(0, -1) };
+    }
+    if (input.name === "submit") {
+      const entered = parseInt(state.input, 10);
+      if (isNaN(entered)) return state;
+      const phase: Phase = entered === state.task.target ? "correct" : "wrong";
+      return { ...state, phase };
+    }
   }
 
   if (input.kind === "key") {
-    const keyMap: Record<string, string> = {
-      ArrowRight: "rechts",
-      ArrowLeft: "links",
-      ArrowDown: "unten",
-      ArrowUp: "oben",
-    };
-    const action = keyMap[input.key];
-    if (action !== undefined) {
-      const newPos = movePosition(state.position, action);
-      if (newPos === state.position) return state;
-      const solved = newPos === state.task.target;
-      return { ...state, position: newPos, solved };
+    if (/^[0-9]$/.test(input.key) && state.input.length < 3) {
+      return { ...state, input: state.input + input.key };
+    }
+    if (input.key === "Backspace") {
+      return { ...state, input: state.input.slice(0, -1) };
+    }
+    if (input.key === "Enter" && state.input.length > 0) {
+      const entered = parseInt(state.input, 10);
+      if (isNaN(entered)) return state;
+      const phase: Phase = entered === state.task.target ? "correct" : "wrong";
+      return { ...state, phase };
     }
   }
 

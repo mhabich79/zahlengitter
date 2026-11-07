@@ -1,17 +1,12 @@
 # yaml-language-server: $schema=../../node_modules/@lernapps/app-templates/runtime/interactive/playthrough.v1.schema.json
-# mittel: seed=2, start=76, target=58 — 2 rechts, 2 oben
+# mittel: seed=2 — Start 17, 1 nach rechts und 3 nach unten → Ziel 48
 seed: 2
 route: mittel
 steps:
-  - inputs: [{ kind: action, name: rechts }]
-    state: { position: 77, solved: false }
-    announce: "Du bist jetzt bei 77."
-  - inputs: [{ kind: action, name: rechts }]
-    state: { position: 78, solved: false }
-    announce: "Du bist jetzt bei 78."
-  - inputs: [{ kind: action, name: oben }]
-    state: { position: 68, solved: false }
-    announce: "Du bist jetzt bei 68."
-  - inputs: [{ kind: action, name: oben }]
-    state: { position: 58, solved: true }
-    announce: "Du hast die Zielzahl 58 erreicht!"
+  - inputs: [{ kind: action, name: digit, value: "4" }]
+    state: { input: "4", phase: input }
+  - inputs: [{ kind: action, name: digit, value: "8" }]
+    state: { input: "48", phase: input }
+  - inputs: [{ kind: action, name: submit }]
+    state: { phase: correct }
+    announce: "Richtig! Die Zahl ist 48."

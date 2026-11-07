@@ -8,7 +8,7 @@ phase: code
 # prePushFailures: written by the pre-push hook. Never change it.
 prePushFailures: 0
 # failedChecks: failed rules and runs, written by lernapps check and the hooks. Never change it.
-failedChecks: { accessible: 3, checks-pass: 7 }
+failedChecks: { accessible: 3, checks-pass: 11 }
 ---
 
 # Plan: Zahlengitter, erste Version
